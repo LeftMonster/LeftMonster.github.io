@@ -422,7 +422,7 @@
                 <div class="title-decoration"></div>
                 <h1 class="main-title">⚡ Code • Create • Conquer ⚡</h1>
             </div>
-            <p class="subtitle">Tokyo University • Cybersecurity Researcher • ML Engineer</p>
+            <p class="subtitle">Cybersecurity Researcher • Reverse Engineer</p>
             <p class="highlight-text">🚀 Building the Future, One Algorithm at a Time 🚀</p>
         </div>
 
@@ -430,7 +430,7 @@
         <div class="info-grid">
             <div class="info-card">
                 <ul class="info-list">
-                    <li>🔭 Currently working at <strong>とうきょうだいがく</strong></li>
+                    <!--                    <li>🔭 Currently working at <strong>とうきょうだいがく</strong></li>-->
                     <li>🌱 Learning all kinds of <strong>CS (コンピュータサイエンス)</strong></li>
                     <li>👯 Looking to collaborate on innovative projects</li>
                     <li>🤔 Seeking help with advanced algorithms</li>
@@ -441,14 +441,15 @@
                     <li>📫 Focus: <strong>Data Science & CyberSecurity【赛博保安】</strong></li>
                     <li>😄 Pronouns: Developer/Researcher</li>
                     <li>⚡ Fun fact: Music-driven coding enthusiast</li>
-                    <li>🎵 Current BGM: Sultan.mp3</li>
+                    <!--                    <li>🎵 Current BGM: Sultan.mp3</li>-->
+                    <li>🎵 Current BGM:<span id="currentTrackCN">${currentTrackName || 'Loading...'}</span></li>
                 </ul>
             </div>
         </div>
 
 
         <div class="controls">
-            <button class="btn btn-primary" onclick="toggleMusic()">🎵 Toggle Music</button>
+            <button class="btn btn-primary" onclick="toggleMusic()">🎵 Next Track</button>
             <button class="btn btn-secondary" onclick="toggleLanguage()">🌐 中文 / English</button>
         </div>
 
@@ -471,10 +472,13 @@
 
 <!-- 音频元素 -->
 <audio id="bgMusic" loop>
-    <source src="music/where_winds_meet.mp3" type="audio/mpeg" data-title="Unknown Track">
-    <source src="music/Sultan.mp3" type="audio/mpeg" data-title="Sultan">
-    Your browser does not support the audio element.
+    <source src="music/where_winds_meet.mp3" type="audio/mpeg", data-title="Where Winds Meet">
 </audio>
+<!--<audio id="bgMusic" loop>-->
+<!--    <source src="music/where_winds_meet.mp3" type="audio/mpeg" data-title="Where Winds Meet">-->
+<!--    <source src="music/Sultan.mp3" type="audio/mpeg" data-title="Sultan">-->
+<!--    Your browser does not support the audio element.-->
+<!--</audio>-->
 
 <script>
     let isEnglish = true;
@@ -484,6 +488,12 @@
     const audioBtn = document.getElementById('audioBtn');
     const content = document.getElementById('content');
     const currentTrackElement = document.getElementById('currentTrack');
+
+    const musicList = [
+        {src: 'music/where_winds_meet.mp3', title: 'Where Winds Meet'},
+        {src: 'music/Sultan.mp3', title: 'Sultan'},
+    ];
+    let currentMusicIndex = 0;
 
     // 着色器相关变量
     let shaderRenderer, animationFrame;
@@ -516,9 +526,9 @@
             currentTrackElement.style.color = '#00ff88';
             currentTrackElement.style.fontWeight = 'bold';
         }
-        // 同时更新中文版本的显示
+        // 同时更新中文版本的显示 重新设置中文版音乐名称显示样式
         const currentTrackCN = document.getElementById('currentTrackCN');
-        if (currentTrackCN) {
+        if (currentTrackCN && currentTrackName) {
             currentTrackCN.textContent = currentTrackName;
             currentTrackCN.style.color = '#00ff88';
             currentTrackCN.style.fontWeight = 'bold';
@@ -814,17 +824,25 @@
 
     // 切换音乐播放状态
     function toggleMusic() {
-        if (isPlaying) {
-            audio.pause();
-            audioBtn.textContent = '🎵';
-            isPlaying = false;
-        } else {
-            audio.play().then(() => {
-                audioBtn.textContent = '🔊';
-                isPlaying = true;
-            }).catch(console.error);
-        }
+        currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+        audio.src = musicList[currentMusicIndex].src;
+        currentTrackName = musicList[currentMusicIndex].title;
+        updateCurrentTrack();
+        audio.play();
     }
+
+    // function toggleMusic() {
+    //     if (isPlaying) {
+    //         audio.pause();
+    //         audioBtn.textContent = '🎵';
+    //         isPlaying = false;
+    //     } else {
+    //         audio.play().then(() => {
+    //             audioBtn.textContent = '🔊';
+    //             isPlaying = true;
+    //         }).catch(console.error);
+    //     }
+    // }
 
     // 语言切换功能
     function toggleLanguage() {
@@ -835,14 +853,12 @@
               <div class="title-decoration"></div>
               <h1 class="main-title">⚡ 代码 • 创造 • 征服 ⚡</h1>
             </div>
-            <p class="subtitle">东京大学 • 网络安全研究员 • 机器学习工程师</p>
+<!--            <p class="subtitle">大学 • 网络安全研究员 • 机器学习工程师</p>-->
+            <p class="subtitle">网络安全研究员 • 逆向工程师</p>
             <p class="highlight-text">🚀 构建未来，一个算法接一个算法 🚀</p>
           </div>
 
-          <div class="stats-section">
-            <img src="https://github-readme-stats.vercel.app/api?username=leftmonster&include_all_commits=true&count_private=true&custom_title=leftmonster%27s%20GitHub%20Stats&line_height=30&show_icons=true&hide_border=true&bg_color=192133&title_color=efb752&icon_color=efb752&text_color=70bed9"
-                 alt="GitHub Stats" class="stats-image">
-          </div>
+
 
           <div class="info-grid">
             <div class="info-card">
@@ -860,19 +876,14 @@
                 <li>🤖 <strong>机器学习</strong> - 高级算法与模型</li>
                 <li>📊 <strong>数据科学</strong> - 分析与洞察</li>
                 <li>🛡️ <strong>网络安全</strong> - 威胁分析与防御</li>
-                <li>🏛️ 目前在 <strong>とうきょうだいがく</strong></li>
-                <li>🎵 正在播放: <span id="currentTrackCN">加载中...</span></li>
+                <li>🎵 正在播放:<span id="currentTrackCN">${currentTrackName || '加载中...'}</span></li>
               </ul>
             </div>
           </div>
 
-          <div class="snake-animation">
-            <img src="https://github.com/LeftMonster/leftmonster/blob/main/github-contribution-grid-snake.svg"
-                 alt="GitHub贡献蛇形图" class="snake-image">
-          </div>
 
           <div class="controls">
-            <button class="btn btn-primary" onclick="toggleMusic()">🎵 切换音乐</button>
+            <button class="btn btn-primary" onclick="toggleMusic()">🎵 下一首</button>
             <button class="btn btn-secondary" onclick="toggleLanguage()">🌐 English / 中文</button>
           </div>
 
