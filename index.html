@@ -472,7 +472,7 @@
 
 <!-- 音频元素 -->
 <audio id="bgMusic" loop>
-    <source src="music/where_winds_meet.mp3" type="audio/mpeg", data-title="Where Winds Meet">
+    <source src="music/where_winds_meet.mp3" type="audio/mpeg" , data-title="Where Winds Meet">
 </audio>
 <!--<audio id="bgMusic" loop>-->
 <!--    <source src="music/where_winds_meet.mp3" type="audio/mpeg" data-title="Where Winds Meet">-->
@@ -520,7 +520,7 @@
 
     // 更新当前播放音乐显示
     function updateCurrentTrack() {
-        currentTrackName = getCurrentTrackName();
+        // currentTrackName = getCurrentTrackName();
         if (currentTrackElement) {
             currentTrackElement.textContent = currentTrackName;
             currentTrackElement.style.color = '#00ff88';
@@ -900,6 +900,10 @@
             location.reload(); // 重新加载页面恢复英文版本
         }
     }
+
+    // 页面加载时
+    currentTrackName = musicList[currentMusicIndex].title;
+    updateCurrentTrack();
 
     // 音频事件监听
     audio.addEventListener('loadstart', () => {
