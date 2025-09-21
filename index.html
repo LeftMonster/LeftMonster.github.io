@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>LeftMonster's GitHub Page</title>
     <style>
         * {
@@ -492,6 +492,7 @@
     const musicList = [
         {src: 'music/where_winds_meet.mp3', title: 'Where Winds Meet'},
         {src: 'music/Sultan.mp3', title: 'Sultan'},
+        {src: 'music/Daughter_of_the_Sea_and_the_Moon.mp3', title: 'Daughter of the Sea & the Moon'},
     ];
     let currentMusicIndex = 0;
 
@@ -765,6 +766,11 @@
         // 设置较低的音量开始
         audio.volume = 0.3;
 
+        // audio.src = musicList[0].src;
+        // currentTrackName = musicList[0].title;
+        // updateCurrentTrack();
+        // 然后调用 attemptAutoplay();
+
         // 尝试自动播放
         attemptAutoplay();
 
@@ -829,6 +835,14 @@
         currentTrackName = musicList[currentMusicIndex].title;
         updateCurrentTrack();
         audio.play();
+        // // 添加这部分
+        // audio.play().then(() => {
+        //     isPlaying = true;
+        //     audioBtn.textContent = '🔊';
+        // }).catch(() => {
+        //     isPlaying = false;
+        //     audioBtn.textContent = '🎵';
+        // });
     }
 
     // function toggleMusic() {
