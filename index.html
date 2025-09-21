@@ -776,10 +776,12 @@
     class ShaderRenderer {
         constructor(canvas) {
             this.canvas = canvas;
-            this.gl = canvas.getContext("webgl2");
+            // 移动端兼容性检查 - 优先尝试webgl2，失败则降级到webgl
+            this.gl = canvas.getContext("webgl2") || canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
             this.startTime = Date.now();
             this.mouseX = 0;
             this.mouseY = 0;
+            this.isWebGL2 = !!canvas.getContext("webgl2");
 
             this.vertexShaderSource = `#version 300 es
           precision highp float;
@@ -878,11 +880,23 @@
 
         init() {
             const gl = this.gl;
-            if (!gl) return;
+            if (!gl) {
+                console.warn('WebGL不支持，启用后备背景');
+                this.enableFallbackBackground();
+                return;
+            }
+
+            console.log(`使用${this.isWebGL2 ? 'WebGL 2.0' : 'WebGL 1.0'}`);
 
             // 创建着色器
             const vertexShader = this.createShader(gl.VERTEX_SHADER, this.vertexShaderSource);
             const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, this.fragmentShaderSource);
+
+            if (!vertexShader || !fragmentShader) {
+                console.warn('着色器创建失败，启用后备背景');
+                this.enableFallbackBackground();
+                return;
+            }
 
             // 创建程序
             this.program = gl.createProgram();
@@ -892,6 +906,7 @@
 
             if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
                 console.error('程序链接失败:', gl.getProgramInfoLog(this.program));
+                this.enableFallbackBackground();
                 return;
             }
 
@@ -900,8 +915,12 @@
             gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
-            // 获取属性位置
-            const position = gl.getAttribLocation(this.program, "position");
+            // 获取属性位置 - 根据WebGL版本使用不同的方法
+            const positionAttr = this.isWebGL2 ? "position" : "position";
+            const position = this.isWebGL2 ?
+                gl.getAttribLocation(this.program, positionAttr) :
+                gl.getAttribLocation(this.program, positionAttr);
+
             gl.enableVertexAttribArray(position);
             gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
@@ -913,6 +932,33 @@
             };
 
             this.resize();
+        }
+
+        // 后备背景方案
+        enableFallbackBackground() {
+            const canvas = this.canvas;
+            canvas.style.background = `
+                linear-gradient(45deg,
+                    rgba(102, 126, 234, 0.3) 0%,
+                    rgba(118, 75, 162, 0.3) 25%,
+                    rgba(255, 0, 255, 0.2) 50%,
+                    rgba(0, 212, 255, 0.3) 75%,
+                    rgba(128, 0, 255, 0.3) 100%)
+            `;
+            canvas.style.backgroundSize = '400% 400%';
+            canvas.style.animation = 'gradientShift 8s ease-in-out infinite';
+
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes gradientShift {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            console.log('已启用CSS后备背景');
         }
 
         createShader(type, source) {
@@ -933,33 +979,44 @@
         resize() {
             const gl = this.gl;
             const canvas = this.canvas;
-            const dpr = window.devicePixelRatio || 1;
+
+            // 移动端优化：限制分辨率以提高性能
+            const isMobile = window.innerWidth <= 768;
+            const dpr = isMobile ? Math.min(window.devicePixelRatio || 1, 2) : (window.devicePixelRatio || 1);
 
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
             canvas.style.width = window.innerWidth + 'px';
             canvas.style.height = window.innerHeight + 'px';
 
-            gl.viewport(0, 0, canvas.width, canvas.height);
+            if (gl) {
+                gl.viewport(0, 0, canvas.width, canvas.height);
+            }
         }
 
         render() {
             const gl = this.gl;
-            if (!this.program) return;
+            if (!this.program || !gl) return;
 
-            const time = (Date.now() - this.startTime) * 0.001;
+            try {
+                const time = (Date.now() - this.startTime) * 0.001;
 
-            gl.clearColor(0, 0, 0, 1);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            gl.useProgram(this.program);
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+                gl.clearColor(0, 0, 0, 1);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.useProgram(this.program);
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
-            // 设置uniforms
-            gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
-            gl.uniform1f(this.uniforms.time, time);
-            gl.uniform2f(this.uniforms.move, this.mouseX, this.mouseY);
+                // 设置uniforms
+                gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+                gl.uniform1f(this.uniforms.time, time);
+                gl.uniform2f(this.uniforms.move, this.mouseX, this.mouseY);
 
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            } catch (error) {
+                console.error('渲染错误:', error);
+                // 渲染失败时不再继续尝试
+                return;
+            }
 
             animationFrame = requestAnimationFrame(() => this.render());
         }
