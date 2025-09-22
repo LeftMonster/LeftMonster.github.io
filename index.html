@@ -702,7 +702,7 @@
 
 <!-- 音频控制 -->
 <div class="audio-controls">
-    <button class="audio-toggle" onclick="toggleMusic()" id="audioBtn">
+    <button class="audio-toggle" onclick="stopMusic()" id="audioBtn">
         🎵
     </button>
 </div>
@@ -1134,6 +1134,20 @@
         currentTrackName = musicList[currentMusicIndex].title;
         updateCurrentTrack();
         audio.play();
+    }
+
+    // 切换音乐播放状态
+    function stopMusic() {
+        if (isPlaying) {
+            audio.pause();
+            audioBtn.textContent = '🎵';
+            isPlaying = false;
+        } else {
+            audio.play().then(() => {
+                audioBtn.textContent = '🔊';
+                isPlaying = true;
+            }).catch(console.error);
+        }
     }
 
     // 语言切换功能
