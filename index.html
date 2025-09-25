@@ -686,7 +686,7 @@
 
 
         <div class="controls">
-            <button class="btn btn-primary" onclick="toggleMusic()">🎵 Next Track</button>
+            <button class="btn btn-primary" onclick="toggleMusic()">🎵 Next Song</button>
             <button class="btn btn-secondary" onclick="toggleLanguage()">🌐 中文 / English</button>
         </div>
 
@@ -709,7 +709,7 @@
 
 <!-- 音频元素 -->
 <audio id="bgMusic" loop>
-    <source src="music/where_winds_meet.mp3" type="audio/mpeg" , data-title="Where Winds Meet">
+    <source src="music/Flourishing_Lights_of_the_Snowmelt_Realm.mp3" type="audio/mpeg", data-title="Flourishing Lights of the Snowmelt Realm">
 </audio>
 <!--<audio id="bgMusic" loop>-->
 <!--    <source src="music/where_winds_meet.mp3" type="audio/mpeg" data-title="Where Winds Meet">-->
@@ -727,9 +727,12 @@
     const currentTrackElement = document.getElementById('currentTrack');
 
     const musicList = [
+        {src: 'music/Flourishing_Lights_of_the_Snowmelt_Realm.mp3', title: 'Flourishing Lights of the Snowmelt Realm'},
+        {src: 'music/Daughter_of_the_Sea_and_the_Moon.mp3', title: 'Daughter of the Sea & the Moon'},
+        {src: 'music/Welcome_to_Fantasyland!.mp3', title: 'Welcome to Fantasyland!'},
+        {src: 'music/A_New_Journey.mp3', title: 'A New Journey'},
         {src: 'music/where_winds_meet.mp3', title: 'Where Winds Meet'},
         {src: 'music/Sultan.mp3', title: 'Sultan'},
-        {src: 'music/Daughter_of_the_Sea_and_the_Moon.mp3', title: 'Daughter of the Sea & the Moon'},
     ];
     let currentMusicIndex = 0;
 
